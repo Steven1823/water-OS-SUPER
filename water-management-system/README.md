@@ -1,4 +1,5 @@
-# Water Management System
+# 💧 Water Management System
+**Real-time IoT Dashboard for Water Utility Management & Fleet Operations**
 
 A complete enterprise water utility management platform with operator machine provisioning, real-time fleet monitoring, billing automation, and integrated cellular telemetry. Track liters sold, manage customers, generate bills, process payments, and self-provision new water machines—all from a secure dashboard backed by Supabase.
 
