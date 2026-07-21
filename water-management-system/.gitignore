@@ -1,3 +1,13 @@
+# Environment & Secrets (NEVER push these)
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+*.pem
+*.key
+secrets.txt
+
 # Logs
 logs
 *.log
@@ -7,14 +17,18 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
 *.local
 
-# Editor directories and files
+# VS Code & IDE (NEVER push - security risk)
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
 .idea
 .DS_Store
 *.suo
@@ -22,3 +36,27 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.vscode-workspace
+
+# OS Files
+Thumbs.db
+.env.*.swp
+
+# Supabase Local
+.supabase
+supabase/.branches
+supabase/.temp
+
+# Build outputs (regenerated)
+.turbo
+*.tsbuildinfo
+.parcel-cache
+
+# Testing
+coverage
+*.lcov
+
+# IDE History
+.history
+.vscode-test
+
