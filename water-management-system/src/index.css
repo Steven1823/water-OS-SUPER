@@ -1,0 +1,68 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
+:root {
+  /* Palette — deep control-room ink with a cyan "flow" accent */
+  --ink: #0b1720;
+  --panel: #101f2b;
+  --panel-raised: #142b3a;
+  --line: #1e3846;
+  --flow: #2dd4bf;
+  --flow-deep: #0e7490;
+  --amber: #f5a524;
+  --danger: #f2545b;
+  --text: #e7f1f5;
+  --text-muted: #7e97a6;
+
+  --font-display: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--ink);
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(45, 212, 191, 0.06), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(14, 116, 144, 0.08), transparent 45%);
+  color: var(--text);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: var(--flow);
+}
+
+::selection {
+  background: rgba(45, 212, 191, 0.3);
+}
+
+/* Utility numerals — meter-style digits used anywhere a liter count appears */
+.meter {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 3px;
+}
