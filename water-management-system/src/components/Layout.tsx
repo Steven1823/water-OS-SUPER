@@ -1,10 +1,11 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { isDemoModeEnabled, setDemoModeEnabled } from '../lib/demoMode'
 import { useBusinessProfile } from '../hooks/useBusinessProfile'
 import { useCurrentUserProfile } from '../hooks/useCurrentUserProfile'
 import { useAlertCount } from '../hooks/useAlertCount'
+import { useNotificationCount } from '../hooks/useNotificationCount'
 import '../styles/layout.css'
 
 type NavItem = {
@@ -22,43 +23,50 @@ type NavGroup = {
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    key: 'executive',
-    title: 'Executive',
+    key: 'dashboard',
+    title: 'Dashboard',
     items: [
       { to: '/', label: 'Dashboard', icon: '▦' },
-      { to: '/reports', label: 'Reports', icon: 'Q' },
     ],
   },
   {
-    key: 'operations',
-    title: 'Water Supply',
+    key: 'customers',
+    title: 'Customer Management',
     items: [
-      { to: '/connect-machine', label: 'Connect Machine', icon: '+' },
-      { to: '/machines', label: 'Machines', icon: 'M' },
       { to: '/customers', label: 'Customers', icon: 'C' },
       { to: '/customer-types', label: 'Customer Types', icon: 'Y' },
+    ],
+  },
+  {
+    key: 'meters',
+    title: 'Meter Management',
+    items: [
       { to: '/meters', label: 'Meters', icon: 'T' },
       { to: '/readings', label: 'Readings', icon: 'R' },
-      { to: '/maintenance', label: 'Maintenance', icon: 'W' },
-      { to: '/repairs', label: 'Repairs', icon: 'H' },
-      { to: '/leak-reports', label: 'Leak Reports', icon: 'L' },
     ],
   },
   {
     key: 'billing',
-    title: 'Revenue',
+    title: 'Billing',
     items: [
       { to: '/generate-bills', label: 'Generate Bills', icon: 'G' },
-      { to: '/billing', label: 'Bills', icon: 'B', badge: '5' },
+      { to: '/billing', label: 'Bills', icon: 'B' },
       { to: '/invoices', label: 'Invoices', icon: 'V' },
-      { to: '/payments', label: 'Payments', icon: 'P' },
-      { to: '/receive-payment', label: 'Receive Payment', icon: '$' },
-      { to: '/receipts', label: 'Receipts', icon: 'E' },
     ],
   },
   {
-    key: 'operations-admin',
-    title: 'Operations Admin',
+    key: 'payments',
+    title: 'Payments',
+    items: [
+      { to: '/receive-payment', label: 'Receive Payment', icon: '$' },
+      { to: '/payments', label: 'Payments', icon: 'P' },
+      { to: '/receipts', label: 'Receipts', icon: 'E' },
+      { to: '/reports', label: 'Reports', icon: 'Q' },
+    ],
+  },
+  {
+    key: 'inventory',
+    title: 'Inventory',
     items: [
       { to: '/stock', label: 'Stock', icon: 'S' },
       { to: '/suppliers', label: 'Suppliers', icon: 'U' },
@@ -66,8 +74,19 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    key: 'access',
-    title: 'Administration',
+    key: 'maintenance',
+    title: 'Maintenance',
+    items: [
+      { to: '/maintenance', label: 'Maintenance', icon: 'W' },
+      { to: '/repairs', label: 'Repairs', icon: 'H' },
+      { to: '/leak-reports', label: 'Leak Reports', icon: 'L' },
+      { to: '/machines', label: 'Machines', icon: 'M' },
+      { to: '/connect-machine', label: 'Connect Machine', icon: '+' },
+    ],
+  },
+  {
+    key: 'staff',
+    title: 'Staff Management',
     items: [
       { to: '/staff', label: 'Employees', icon: 'E' },
       { to: '/roles-permissions', label: 'Roles & Permissions', icon: 'K' },
@@ -87,11 +106,15 @@ export function Layout() {
   const { profile: businessProfile } = useBusinessProfile()
   const { profile: currentUser } = useCurrentUserProfile()
   const { count: alertCount } = useAlertCount()
+  const { count: notificationCount } = useNotificationCount()
   const demoMode = isDemoModeEnabled()
   const [search, setSearch] = useState('')
   const [globalSearch, setGlobalSearch] = useState('')
   const [collapsed, setCollapsed] = useState(false)
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
+  const [now, setNow] = useState<Date>(new Date())
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
+  const profileMenuRef = useRef<HTMLDivElement | null>(null)
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       return JSON.parse(window.localStorage.getItem('wms_favorites') || '[]')
@@ -129,6 +152,23 @@ export function Layout() {
   useEffect(() => {
     window.localStorage.setItem('wms_favorites', JSON.stringify(favorites))
   }, [favorites])
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (!profileMenuRef.current) return
+      if (!profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false)
+      }
+    }
+
+    window.addEventListener('click', onClick)
+    return () => window.removeEventListener('click', onClick)
+  }, [])
 
   const filteredGroups = useMemo(() => {
     if (!search.trim()) return NAV_GROUPS
@@ -196,13 +236,17 @@ export function Layout() {
     <div className={`layout-container ${collapsed ? 'sidebar-collapsed' : ''}`}>
       <aside className="sidebar" aria-label="Main navigation">
         <div className="sidebar-header">
-          <div className="brand-mark" aria-hidden="true">
-            W
-          </div>
+          {businessProfile?.logo_url ? (
+            <img className="brand-logo" src={businessProfile.logo_url} alt="Business logo" />
+          ) : (
+            <div className="brand-mark" aria-hidden="true">
+              W
+            </div>
+          )}
           {!collapsed && (
             <div>
               <h1>{businessProfile?.business_name || 'WaterFlow OS'}</h1>
-              <p className="business-meta">{businessProfile?.tagline || 'Municipal Utility'}</p>
+              <p className="business-meta">Water Management System</p>
             </div>
           )}
           <button className="collapse-btn" onClick={() => setCollapsed((value) => !value)}>
@@ -287,6 +331,7 @@ export function Layout() {
                   <p className="profile-name">{currentUser.name}</p>
                   <p className="profile-role">{currentUser.role}</p>
                 </div>
+                <span className={`online-dot ${currentUser.isOnline ? 'online' : 'offline'}`} />
               </div>
               <button className="logout-btn side-logout" onClick={handleSignOut}>
                 Log Out
@@ -308,8 +353,20 @@ export function Layout() {
         )}
         <header className="top-bar">
           <div className="top-bar-left">
+            <button
+              type="button"
+              className="hamburger-btn"
+              onClick={() => setCollapsed((value) => !value)}
+              aria-label="Toggle sidebar"
+            >
+              ≡
+            </button>
             <h2 id="page-title">{pageTitle(location.pathname)}</h2>
-            <span className="today-stamp">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+            <span className="today-stamp">
+              {now.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+              {' · '}
+              {now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+            </span>
           </div>
           <div className="top-bar-right">
             <form className="global-search-form" onSubmit={handleGlobalSearchSubmit}>
@@ -338,19 +395,16 @@ export function Layout() {
                 </div>
               )}
             </form>
-            <button className="top-action" onClick={() => navigate('/customers')}>+ Quick Add</button>
+            <button className="top-action" onClick={() => navigate('/customers')}>+ Add Customer</button>
             <button className="icon-pill" onClick={() => navigate('/maintenance')} aria-label="Alerts">
-              A
+              !
               <span className="pill-badge">{alertCount}</span>
             </button>
-            <button className="icon-pill" onClick={() => navigate('/reports')} aria-label="Messages">
-              M
-              <span className="pill-badge">4</span>
+            <button className="icon-pill" onClick={() => navigate('/reports')} aria-label="Notifications">
+              N
+              <span className="pill-badge">{notificationCount}</span>
             </button>
-            <select className="business-selector" aria-label="Business selector" defaultValue="main">
-              <option value="main">Main Utility</option>
-              <option value="demo">Demo Business</option>
-            </select>
+            <span className="business-chip">{currentUser.businessName || businessProfile?.business_name || 'Utility Workspace'}</span>
             <button
               className="theme-btn"
               onClick={() => setTheme((value) => (value === 'dark' ? 'light' : 'dark'))}
@@ -358,7 +412,29 @@ export function Layout() {
             >
               {theme === 'dark' ? 'Light' : 'Dark'}
             </button>
-            <span className="session-label">{demoMode ? 'Demo Session' : 'Live Session'} · {currentUser.email || 'offline'}</span>
+            <div className="profile-menu" ref={profileMenuRef}>
+              <button
+                type="button"
+                className="profile-trigger"
+                onClick={() => setProfileMenuOpen((value) => !value)}
+                aria-label="Open account menu"
+              >
+                <span className="profile-trigger-avatar">{initials}</span>
+                <span className="profile-trigger-text">
+                  <strong>{currentUser.name}</strong>
+                  <small>{currentUser.role}</small>
+                </span>
+                <span className={`online-dot ${currentUser.isOnline ? 'online' : 'offline'}`} />
+              </button>
+              {profileMenuOpen && (
+                <div className="profile-dropdown">
+                  <p className="profile-dropdown-meta">{currentUser.email || 'No email'}</p>
+                  <button type="button" onClick={() => navigate('/settings')}>Account Settings</button>
+                  <button type="button" onClick={handleSignOut}>Logout</button>
+                </div>
+              )}
+            </div>
+            <span className="session-label">{demoMode ? 'Demo Session' : 'Live Session'}</span>
           </div>
         </header>
 

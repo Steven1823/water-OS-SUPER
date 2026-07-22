@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { isDemoModeEnabled, setDemoModeEnabled } from '../lib/demoMode'
 import { isPasskeySupported, registerDevicePasskey, verifyDevicePasskey } from '../lib/passkeyAuth'
+import { hasPasskeyAccess, unlockPasskeyAccess } from '../lib/passkeyAccess'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -12,6 +13,15 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [passkeySecret, setPasskeySecret] = useState('')
+  const [passkeyAccessUnlocked, setPasskeyAccessUnlocked] = useState(false)
+  const [isMobileViewport, setIsMobileViewport] = useState(() => window.innerWidth <= 920)
+
+  useEffect(() => {
+    const onResize = () => setIsMobileViewport(window.innerWidth <= 920)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   useEffect(() => {
     if (isDemoModeEnabled()) {
@@ -30,6 +40,10 @@ export function LoginPage() {
         // Keep user on login if hosted auth is unreachable.
       })
   }, [navigate])
+
+  useEffect(() => {
+    setPasskeyAccessUnlocked(hasPasskeyAccess(email))
+  }, [email])
 
   const handleSignIn = async (event: FormEvent) => {
     event.preventDefault()
@@ -77,6 +91,12 @@ export function LoginPage() {
     setError(null)
     setMessage(null)
 
+    if (!passkeyAccessUnlocked) {
+      setError('Passkey setup requires a paid access key. Enter and activate your key first.')
+      setLoading(false)
+      return
+    }
+
     try {
       await registerDevicePasskey(email)
       setMessage('Passkey created on this device. You can verify it before signing in.')
@@ -85,6 +105,21 @@ export function LoginPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleUnlockPasskeyAccess = () => {
+    setError(null)
+    setMessage(null)
+
+    const result = unlockPasskeyAccess(email, passkeySecret)
+    if (!result.ok) {
+      setError(result.error)
+      return
+    }
+
+    setPasskeyAccessUnlocked(true)
+    setPasskeySecret('')
+    setMessage('Passkey access activated for this email on this device.')
   }
 
   const handleVerifyPasskey = async () => {
@@ -137,27 +172,27 @@ export function LoginPage() {
       style={{
         minHeight: '100vh',
         display: 'grid',
-        gridTemplateColumns: 'minmax(320px, 480px) minmax(320px, 560px)',
+        gridTemplateColumns: isMobileViewport ? '1fr' : 'minmax(320px, 480px) minmax(320px, 560px)',
         alignItems: 'stretch',
         justifyContent: 'center',
         background:
           'radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.16), transparent 28%), radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.08), transparent 22%), linear-gradient(145deg, #06131f, #0b1c2d)',
         color: 'var(--text-primary)',
-        padding: '24px',
-        gap: '24px',
+        padding: isMobileViewport ? '12px' : '24px',
+        gap: isMobileViewport ? '12px' : '24px',
       }}
     >
       <section
         style={{
           border: '1px solid var(--line-soft)',
           borderRadius: '24px',
-          padding: '32px',
+          padding: isMobileViewport ? '20px' : '32px',
           background: 'rgba(7, 21, 34, 0.72)',
           backdropFilter: 'blur(10px)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: '520px',
+          minHeight: isMobileViewport ? 'auto' : '520px',
         }}
       >
         <div>
@@ -179,7 +214,9 @@ export function LoginPage() {
           <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Utility Command Center
           </p>
-          <h1 style={{ margin: '10px 0 12px', fontSize: '40px', lineHeight: 1.05 }}>Operate billing, service delivery, and field telemetry from one control room.</h1>
+          <h1 style={{ margin: '10px 0 12px', fontSize: isMobileViewport ? '30px' : '40px', lineHeight: 1.05 }}>
+            Operate billing, service delivery, and field telemetry from one control room.
+          </h1>
           <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '15px', lineHeight: 1.7 }}>
             WaterFlow OS gives operations teams one view of customers, machines, revenue collection, and service continuity. Use your production account or launch the seeded demo workspace.
           </p>
@@ -224,11 +261,11 @@ export function LoginPage() {
         onSubmit={handleSignIn}
         style={{
           width: '100%',
-          maxWidth: '460px',
+          maxWidth: isMobileViewport ? '100%' : '460px',
           background: 'var(--bg-panel)',
           border: '1px solid var(--line-soft)',
           borderRadius: '24px',
-          padding: '32px',
+          padding: isMobileViewport ? '20px' : '32px',
           display: 'grid',
           gap: '16px',
           boxShadow: '0 20px 40px rgba(2, 12, 20, 0.24)',
@@ -240,7 +277,9 @@ export function LoginPage() {
           <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             {isSignUp ? 'Sign Up' : 'Sign In'}
           </p>
-          <h2 style={{ margin: '8px 0 8px', fontSize: '30px', color: 'var(--text-primary)' }}>{isSignUp ? 'Create your account' : 'Access your workspace'}</h2>
+          <h2 style={{ margin: '8px 0 8px', fontSize: isMobileViewport ? '24px' : '30px', color: 'var(--text-primary)' }}>
+            {isSignUp ? 'Create your account' : 'Access your workspace'}
+          </h2>
           <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '14px' }}>
             {isSignUp ? 'Create a login, then optionally attach a passkey for this device.' : 'Sign in to your account, or explore using demo data.'}
           </p>
@@ -362,7 +401,7 @@ export function LoginPage() {
               cursor: 'pointer',
             }}
           >
-            Set Up Passkey
+            {passkeyAccessUnlocked ? 'Set Up Passkey' : 'Passkey Locked'}
           </button>
           <button
             type="button"
@@ -398,6 +437,56 @@ export function LoginPage() {
           >
             {isSignUp ? 'Have an account? Sign in' : 'Need an account? Sign up'}
           </button>
+        </div>
+
+        <div
+          style={{
+            border: '1px solid var(--line-soft)',
+            borderRadius: '12px',
+            padding: '12px',
+            display: 'grid',
+            gap: '8px',
+            background: 'rgba(255, 255, 255, 0.02)',
+          }}
+        >
+          <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-dim)' }}>
+            Passkey Access Key {passkeyAccessUnlocked ? 'Activated' : 'Required'}
+          </p>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <input
+              type="password"
+              placeholder="Enter issued access key"
+              value={passkeySecret}
+              onChange={(event) => setPasskeySecret(event.target.value)}
+              style={{
+                flex: 1,
+                minWidth: '180px',
+                background: 'var(--bg-control)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--line-soft)',
+                borderRadius: '10px',
+                padding: '10px 12px',
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleUnlockPasskeyAccess}
+              disabled={loading || passkeyAccessUnlocked}
+              style={{
+                border: '1px solid var(--line-soft)',
+                borderRadius: '10px',
+                background: passkeyAccessUnlocked ? 'rgba(34, 197, 94, 0.2)' : 'var(--bg-control)',
+                color: 'var(--text-primary)',
+                padding: '10px 12px',
+                cursor: 'pointer',
+              }}
+            >
+              {passkeyAccessUnlocked ? 'Activated' : 'Activate Key'}
+            </button>
+          </div>
+          <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-dim)' }}>
+            Passkey setup is only available after account payment and issuance of a valid access key.
+          </p>
         </div>
 
         <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '12px', lineHeight: 1.6 }}>

@@ -115,6 +115,10 @@ npm install
    ```
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_ANON_KEY=your-anon-key
+   # Passkey paid-access key configuration
+   VITE_PASSKEY_ACCESS_KEY=YOUR_ISSUED_SECRET_KEY
+   # Optional: comma-separated keys
+   VITE_PASSKEY_ACCESS_KEYS=KEY_ONE,KEY_TWO,KEY_THREE
    ```
 
 ### 3. Deploy Database & Functions

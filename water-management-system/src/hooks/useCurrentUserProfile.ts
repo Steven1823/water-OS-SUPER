@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { demoEmployees } from '../lib/demoData'
+import { demoBusinessProfile, demoEmployees } from '../lib/demoData'
 import { isDemoRuntime } from '../lib/runtimeMode'
 
 export interface CurrentUserProfile {
@@ -8,6 +8,7 @@ export interface CurrentUserProfile {
   role: string
   email: string | null
   isOnline: boolean
+  businessName: string | null
 }
 
 export function useCurrentUserProfile() {
@@ -16,6 +17,7 @@ export function useCurrentUserProfile() {
     role: 'Staff',
     email: null,
     isOnline: true,
+    businessName: null,
   })
 
   const load = useCallback(async () => {
@@ -26,6 +28,7 @@ export function useCurrentUserProfile() {
         role: demoUser.roles.name,
         email: demoUser.email,
         isOnline: true,
+        businessName: demoBusinessProfile.business_name,
       })
       return
     }
@@ -34,7 +37,7 @@ export function useCurrentUserProfile() {
     const user = userData.user
 
     if (!user) {
-      setProfile({ name: 'Guest', role: 'Viewer', email: null, isOnline: false })
+      setProfile({ name: 'Guest', role: 'Viewer', email: null, isOnline: false, businessName: null })
       return
     }
 
@@ -44,17 +47,37 @@ export function useCurrentUserProfile() {
       email?.split('@')[0] ||
       'User'
 
-    const { data: employee } = await supabase
-      .from('employees')
-      .select('name, roles(name)')
-      .eq('email', email)
+    const { data: appProfile } = await supabase
+      .from('profiles')
+      .select('full_name, role, businesses(name)')
+      .eq('id', user.id)
       .maybeSingle()
 
+    const profileName = (appProfile as { full_name?: string } | null)?.full_name
+    const profileRole = (appProfile as { role?: string } | null)?.role
+    const profileBusiness =
+      ((appProfile as { businesses?: { name?: string } | null } | null)?.businesses?.name ?? null)
+
+    let employeeName: string | null = null
+    let employeeRole: string | null = null
+
+    if (!profileName || !profileRole) {
+      const { data: employee } = await supabase
+        .from('employees')
+        .select('name, roles(name)')
+        .eq('email', email)
+        .maybeSingle()
+
+      employeeName = (employee as { name?: string } | null)?.name ?? null
+      employeeRole = (employee as { roles?: { name?: string } | null } | null)?.roles?.name ?? null
+    }
+
     setProfile({
-      name: employee?.name ?? defaultName,
-      role: (employee as any)?.roles?.name ?? 'Staff',
+      name: profileName ?? employeeName ?? defaultName,
+      role: profileRole ?? employeeRole ?? 'Staff',
       email,
       isOnline: true,
+      businessName: profileBusiness,
     })
   }, [])
 

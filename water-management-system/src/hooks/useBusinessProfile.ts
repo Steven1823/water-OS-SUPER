@@ -42,6 +42,21 @@ export function useBusinessProfile() {
 
   useEffect(() => {
     load()
+
+    if (isDemoRuntime()) {
+      return
+    }
+
+    const channel = supabase
+      .channel('business-profile-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'business_profiles' }, () => {
+        load()
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [load])
 
   return { profile, loading, refresh: load }

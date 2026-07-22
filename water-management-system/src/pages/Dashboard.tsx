@@ -15,7 +15,14 @@ export function DashboardPage() {
   if (loading) {
     return (
       <div className="dashboard-container">
-        <div className="dashboard-message">Loading executive dashboard...</div>
+        <section className="kpi-section">
+          <h2>Operational KPIs</h2>
+          <div className="kpi-grid" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="dashboard-skeleton" />
+            ))}
+          </div>
+        </section>
       </div>
     )
   }
@@ -151,12 +158,12 @@ export function DashboardPage() {
           <h3>Quick Actions</h3>
           <p className="chart-subtitle">Common operations for daily utility control</p>
           <div className="quick-list">
-            <button type="button" onClick={() => navigate('/generate-bills')}>Issue New Bill</button>
             <button type="button" onClick={() => navigate('/customers')}>Add Customer</button>
             <button type="button" onClick={() => navigate('/readings')}>Record Meter Reading</button>
+            <button type="button" onClick={() => navigate('/generate-bills')}>Generate Bills</button>
             <button type="button" onClick={() => navigate('/receive-payment')}>Receive Payment</button>
-            <button type="button" onClick={() => navigate('/receipts')}>Create Receipt</button>
             <button type="button" onClick={() => navigate('/reports')}>Open Reports</button>
+            <button type="button" onClick={() => navigate('/leak-reports')}>Leak Reports</button>
           </div>
         </div>
       </section>

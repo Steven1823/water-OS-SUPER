@@ -4,10 +4,11 @@
 		{
 			"label": "Dev Server",
 			"type": "shell",
-			"command": "npm",
+			"command": "powershell",
 			"args": [
-				"run",
-				"dev"
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; npm run dev"
 			],
 			"isBackground": true,
 			"group": "build"
@@ -545,6 +546,18 @@
 				"Set-Location .\\water-management-system; npm run build"
 			],
 			"isBackground": false
+		},
+		{
+			"label": "Dev Server (Nested App)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; npm run dev"
+			],
+			"isBackground": true,
+			"group": "build"
 		}
 	]
 }
