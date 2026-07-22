@@ -1,4 +1,4 @@
-import type { MachineToday } from "../types";
+import type { MachineRecord } from "../hooks/useMachines";
 
 const STATUS_COLOR: Record<string, string> = {
   online: "var(--flow)",
@@ -8,7 +8,7 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 interface MachineCardProps {
-  machine: MachineToday;
+  machine: MachineRecord;
   selected: boolean;
   onSelect: () => void;
 }
@@ -49,7 +49,7 @@ export function MachineCard({ machine, selected, onSelect }: MachineCardProps) {
         />
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-muted)" }}>
-        <span className="meter">{machine.liters_today.toFixed(1)} L today</span>
+        <span className="meter">{machine.serial_number}</span>
         <span>last seen {lastSeen}</span>
       </div>
     </button>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import type { Alert } from "../types";
+import { isDemoRuntime, shouldUseRealtime } from "../lib/runtimeMode";
 
 const TYPE_LABEL: Record<Alert["type"], string> = {
   offline: "Offline",
@@ -14,6 +15,28 @@ export function AlertsPanel() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
+    if (isDemoRuntime()) {
+      setAlerts([
+        {
+          id: 1,
+          machine_id: "demo-machine-3",
+          type: "fault",
+          message: "Flow sensor mismatch detected.",
+          resolved: false,
+          created_at: new Date(Date.now() - 22 * 60 * 1000).toISOString(),
+        },
+        {
+          id: 2,
+          machine_id: "demo-machine-2",
+          type: "low_tank",
+          message: "Tank reached 28% threshold.",
+          resolved: false,
+          created_at: new Date(Date.now() - 47 * 60 * 1000).toISOString(),
+        },
+      ]);
+      return;
+    }
+
     (async () => {
       const { data } = await supabase
         .from("alerts")
@@ -23,6 +46,10 @@ export function AlertsPanel() {
         .limit(10);
       if (data) setAlerts(data as Alert[]);
     })();
+
+    if (!shouldUseRealtime()) {
+      return;
+    }
 
     const channel = supabase
       .channel("alerts-live")

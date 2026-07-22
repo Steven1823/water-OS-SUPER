@@ -13,12 +13,15 @@ export function MachinesPage() {
   const statusBadgeClass = (status: string) => {
     switch (status) {
       case "active":
+      case "online":
         return "badge-success";
       case "connected":
         return "badge-info";
       case "offline":
         return "badge-warning";
       case "under_maintenance":
+      case "maintenance":
+      case "fault":
         return "badge-danger";
       default:
         return "badge-secondary";

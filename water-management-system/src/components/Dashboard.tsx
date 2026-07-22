@@ -12,14 +12,17 @@ export function Dashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!selectedId && machines.length > 0) setSelectedId(machines[0].machine_id);
+    if (!selectedId && machines.length > 0) setSelectedId(machines[0].id);
   }, [machines, selectedId]);
 
   const sales = useMachineSales(selectedId, 24);
-  const selected = machines.find((m) => m.machine_id === selectedId);
+  const selected = machines.find((m) => m.id === selectedId);
 
-  const fleetLitersToday = machines.reduce((sum, m) => sum + m.liters_today, 0);
-  const fleetRevenueToday = machines.reduce((sum, m) => sum + m.revenue_today, 0);
+  const selectedLitersToday = sales.reduce((sum, row) => sum + row.liters, 0);
+  const selectedRevenueToday = sales.reduce((sum, row) => sum + (row.amount_paid ?? 0), 0);
+
+  const fleetLitersToday = 0;
+  const fleetRevenueToday = 0;
   const onlineCount = machines.filter((m) => m.status === "online").length;
 
   return (
@@ -52,10 +55,10 @@ export function Dashboard() {
           )}
           {machines.map((m) => (
             <MachineCard
-              key={m.machine_id}
+              key={m.id}
               machine={m}
-              selected={m.machine_id === selectedId}
-              onSelect={() => setSelectedId(m.machine_id)}
+              selected={m.id === selectedId}
+              onSelect={() => setSelectedId(m.id)}
             />
           ))}
         </div>
@@ -78,12 +81,12 @@ export function Dashboard() {
               >
                 <LiquidGauge
                   percent={
-                    selected.liters_today && machines.length
-                      ? Math.min(100, (selected.liters_today / (1000)) * 100)
+                    selectedLitersToday && machines.length
+                      ? Math.min(100, (selectedLitersToday / 1000) * 100)
                       : 0
                   }
                   label="Today's progress"
-                  sublabel={`${selected.liters_today.toFixed(1)} L / 1,000 L target`}
+                  sublabel={`${selectedLitersToday.toFixed(1)} L / 1,000 L target`}
                 />
                 <div style={{ flex: 1, minWidth: 240 }}>
                   <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{selected.name}</div>
@@ -93,7 +96,7 @@ export function Dashboard() {
                   <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
                     Revenue today:{" "}
                     <span className="meter" style={{ color: "var(--text)" }}>
-                      {selected.revenue_today.toFixed(0)} KES
+                      {selectedRevenueToday.toFixed(0)} KES
                     </span>
                   </div>
                 </div>

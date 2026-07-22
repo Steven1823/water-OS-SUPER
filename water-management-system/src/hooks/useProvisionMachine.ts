@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { demoMachines } from "../lib/demoData";
+import { isDemoRuntime, shouldUseRealtime } from "../lib/runtimeMode";
 
 interface Machine {
   id: string;
@@ -34,77 +36,108 @@ export function useProvisionMachine(machineId: string | null) {
 
     setLoading(true);
 
-    // Subscribe to machines table changes
-    const machineSubscription = supabase
-      .from("machines")
-      .on("postgres_changes", {
-        event: "*",
-        schema: "public",
-        table: "machines",
-        filter: `id=eq.${machineId}`,
-      } as any,
-      (payload: any) => {
-        const machine: Machine = payload.new;
-        if (
-          machine.status === "connected" ||
-          machine.status === "active"
-        ) {
-          setStatus({
-            state: "connected",
-            machineId: machine.id,
-            serialNumber: machine.serial_number,
-            connectedAt: new Date().toISOString(),
-          });
-        } else if (machine.status === "offline") {
-          setStatus({
-            state: "waiting_for_connection",
-            machineId: machine.id,
-            serialNumber: machine.serial_number,
-          });
-        }
+    if (isDemoRuntime()) {
+      const machine = demoMachines.find((item) => item.id === machineId);
+      if (machine) {
+        setStatus({
+          state: machine.status === "active" || machine.status === "connected" ? "connected" : "waiting_for_connection",
+          machineId: machine.id,
+          serialNumber: machine.serial_number,
+          connectedAt: machine.last_seen_at ?? undefined,
+        });
+      } else {
+        setStatus(null);
       }
-    )
-      .subscribe((status: any) => {
-        if (status === "CHANNEL_ERROR") {
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    if (!shouldUseRealtime()) {
+      setLoading(false);
+      return;
+    }
+
+    // Subscribe to machines and readings changes for this machine
+    const channel = supabase
+      .channel(`provisioning-${machineId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "machines",
+          filter: `id=eq.${machineId}`,
+        },
+        (payload) => {
+          const machine = payload.new as Machine;
+          if (machine.status === "connected" || machine.status === "active") {
+            setStatus({
+              state: "connected",
+              machineId: machine.id,
+              serialNumber: machine.serial_number,
+              connectedAt: new Date().toISOString(),
+            });
+          } else if (machine.status === "offline") {
+            setStatus({
+              state: "waiting_for_connection",
+              machineId: machine.id,
+              serialNumber: machine.serial_number,
+            });
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "readings",
+          filter: `machine_id=eq.${machineId}`,
+        },
+        () => {
+          setStatus((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  state: "connected",
+                  connectedAt: new Date().toISOString(),
+                }
+              : null
+          );
+        }
+      )
+      .subscribe((subscriptionStatus) => {
+        if (subscriptionStatus === "CHANNEL_ERROR") {
           setError("Failed to subscribe to machine updates");
           setLoading(false);
-        } else if (status === "SUBSCRIBED") {
+        } else if (subscriptionStatus === "SUBSCRIBED") {
           setLoading(false);
         }
       });
 
-    // Subscribe to readings table - when first reading arrives, machine is truly connected
-    const readingsSubscription = supabase
-      .from("readings")
-      .on("postgres_changes", {
-        event: "INSERT",
-        schema: "public",
-        table: "readings",
-        filter: `machine_id=eq.${machineId}`,
-      } as any,
-      () => {
-        // First reading arrived - machine is connected
-        setStatus((prev) =>
-          prev
-            ? {
-                ...prev,
-                state: "connected",
-                connectedAt: new Date().toISOString(),
-              }
-            : null
-        );
-      }
-    )
-      .subscribe();
-
     return () => {
-      supabase.removeChannel(machineSubscription);
-      supabase.removeChannel(readingsSubscription);
+      supabase.removeChannel(channel);
     };
   }, [machineId]);
 
   const refresh = async () => {
     if (!machineId) return;
+
+    if (isDemoRuntime()) {
+      const machine = demoMachines.find((item) => item.id === machineId);
+      if (machine) {
+        setStatus({
+          state: machine.status === "active" || machine.status === "connected" ? "connected" : "waiting_for_connection",
+          machineId: machine.id,
+          serialNumber: machine.serial_number,
+          connectedAt: machine.last_seen_at ?? undefined,
+        });
+        setError(null);
+      }
+      return;
+    }
+
     setLoading(true);
     try {
       const { data } = await supabase

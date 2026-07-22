@@ -11,6 +11,540 @@
 			],
 			"isBackground": true,
 			"group": "build"
+		},
+		{
+			"label": "Install In Nested",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"--prefix",
+				"water-management-system"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Docker Version",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"--version"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Supabase CLI Version",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"supabase",
+				"--version"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Supabase CLI Version NonInteractive",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"--yes",
+				"supabase",
+				"--version"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Supabase Start Local",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location water-management-system; npx --yes supabase start"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Supabase Containers",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"ps",
+				"--format",
+				"table {{.Names}}\\t{{.Status}}"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Supabase CLI Version via PowerShell",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"npx --yes supabase --version"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Dev Nested",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev",
+				"--prefix",
+				"water-management-system"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "Typecheck Nested",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"tsc",
+				"--noEmit",
+				"--project",
+				"water-management-system/tsconfig.json"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Typecheck Nested Local",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"--prefix",
+				"water-management-system",
+				"build",
+				"--",
+				"--mode",
+				"development"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "RLS Raw Read Machines",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$h=@{apikey='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA';Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA'}; try { (Invoke-RestMethod -Method Get -Uri 'https://yxiuogcqfaakhajmzwxq.supabase.co/rest/v1/machines?select=id,serial_number&limit=3' -Headers $h) | ConvertTo-Json -Depth 4 } catch { $_.Exception.Message }"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "RLS Raw Read Customers",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$h=@{apikey='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA';Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA'}; try { (Invoke-RestMethod -Method Get -Uri 'https://yxiuogcqfaakhajmzwxq.supabase.co/rest/v1/customers?select=id,name,email&limit=3' -Headers $h) | ConvertTo-Json -Depth 4 } catch { $_.Exception.Message }"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Ingest Unknown Device",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$headers=@{'Content-Type'='application/json';'x-device-key'='DEMO-UNKNOWN:badsecret'}; $body='{\"serial_number\":\"DEMO-UNKNOWN\",\"liters_dispensed_total\":100}'; try { Invoke-RestMethod -Method Post -Uri 'https://yxiuogcqfaakhajmzwxq.supabase.co/functions/v1/ingest-reading' -Headers $headers -Body $body | ConvertTo-Json -Depth 5 } catch { if ($_.Exception.Response) { $r = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream()); $r.ReadToEnd() } else { $_.Exception.Message } }"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "RLS Curl Machines",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-sS",
+				"-i",
+				"https://yxiuogcqfaakhajmzwxq.supabase.co/rest/v1/machines?select=id,serial_number%26limit=3",
+				"-H",
+				"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA",
+				"-H",
+				"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "RLS Curl Customers",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-sS",
+				"-i",
+				"https://yxiuogcqfaakhajmzwxq.supabase.co/rest/v1/customers?select=id,name,email%26limit=3",
+				"-H",
+				"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA",
+				"-H",
+				"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Ingest Curl Unknown",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-sS",
+				"-i",
+				"-X",
+				"POST",
+				"https://yxiuogcqfaakhajmzwxq.supabase.co/functions/v1/ingest-reading",
+				"-H",
+				"content-type: application/json",
+				"-H",
+				"x-device-key: DEMO-UNKNOWN:badsecret",
+				"-d",
+				"{\"serial_number\":\"DEMO-UNKNOWN\",\"liters_dispensed_total\":100}"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "RLS Curl Machines Fixed",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"curl.exe -sS -i \"https://yxiuogcqfaakhajmzwxq.supabase.co/rest/v1/machines?select=id,serial_number&limit=3\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA\""
+			],
+			"isBackground": false
+		},
+		{
+			"label": "RLS Curl Customers Fixed",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"curl.exe -sS -i \"https://yxiuogcqfaakhajmzwxq.supabase.co/rest/v1/customers?select=id,name,email&limit=3\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA\""
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Ingest Curl Unknown Fixed",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"curl.exe -sS -i -X POST \"https://yxiuogcqfaakhajmzwxq.supabase.co/functions/v1/ingest-reading\" -H \"content-type: application/json\" -H \"x-device-key: DEMO-UNKNOWN:badsecret\" -d '{\"serial_number\":\"DEMO-UNKNOWN\",\"liters_dispensed_total\":100}'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "RLS Curl Machines Safe",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-sS",
+				"-i",
+				"https://yxiuogcqfaakhajmzwxq.supabase.co/rest/v1/machines?select=id,serial_number",
+				"-H",
+				"Range: 0-2",
+				"-H",
+				"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA",
+				"-H",
+				"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "RLS Curl Customers Safe",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-sS",
+				"-i",
+				"https://yxiuogcqfaakhajmzwxq.supabase.co/rest/v1/customers?select=id,name,email",
+				"-H",
+				"Range: 0-2",
+				"-H",
+				"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA",
+				"-H",
+				"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4aXVvZ2NxZmFha2hham16d3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjA1MjksImV4cCI6MjEwMDIzNjUyOX0.wj8ZYzPP5wEpKNMkkrRm5WwlLTBMh28K8iBELkhbtCA"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Ingest Curl Unknown Safe",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-sS",
+				"-i",
+				"-X",
+				"POST",
+				"https://yxiuogcqfaakhajmzwxq.supabase.co/functions/v1/ingest-reading",
+				"-H",
+				"content-type: application/json",
+				"-H",
+				"x-device-key: DEMO-UNKNOWN:badsecret",
+				"--data-binary",
+				"{\"serial_number\":\"DEMO-UNKNOWN\",\"liters_dispensed_total\":100}"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Ingest Curl Unknown Safe 2",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-sS",
+				"-i",
+				"-X",
+				"POST",
+				"https://yxiuogcqfaakhajmzwxq.supabase.co/functions/v1/ingest-reading",
+				"-H",
+				"content-type: application/json",
+				"-H",
+				"x-device-key: DEMO-UNKNOWN:badsecret",
+				"-d",
+				"'{\"serial_number\":\"DEMO-UNKNOWN\",\"liters_dispensed_total\":100}'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "TS NoEmit Nested",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"exec",
+				"--prefix",
+				"water-management-system",
+				"tsc",
+				"--",
+				"--noEmit"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Nested",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"--prefix",
+				"water-management-system",
+				"build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "TS NoEmit Nested Correct",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"--prefix",
+				"water-management-system",
+				"build",
+				"--",
+				"--mode",
+				"development"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "TS Direct NoEmit Correct",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; .\\node_modules\\.bin\\tsc --noEmit"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Nested Correct",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build",
+				"--prefix",
+				"water-management-system"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Log Supabase Version",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; npx --yes supabase --version | Out-File -FilePath .\\tmp-supabase-version.txt -Encoding utf8"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Log Supabase Start",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; npx --yes supabase start *> .\\tmp-supabase-start.txt"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Log TSC NoEmit",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; .\\node_modules\\.bin\\tsc --noEmit *> .\\tmp-tsc-noemit.txt"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Log Build",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; npm run build *> .\\tmp-build.txt"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Errors Summary",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; (Get-Content .\\tmp-build.txt -Encoding Unicode | Select-String -Pattern 'error TS|src/|vite v|failed|error' | Select-Object -First 40).Line"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Supabase Start Summary",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; (Get-Content .\\tmp-supabase-start.txt -Encoding Unicode | Select-String -Pattern 'failed|docker|error|cannot|connect|started|supabase' | Select-Object -First 40).Line"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Errors Summary Fixed",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; (Get-Content .\\tmp-build.txt -Encoding Unicode | Select-String -Pattern \"error TS|src/|vite|failed|error\" | Select-Object -First 40).Line"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Supabase Start Summary Fixed",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; (Get-Content .\\tmp-supabase-start.txt -Encoding Unicode | Select-String -Pattern \"failed|docker|error|cannot|connect|started|supabase\" | Select-Object -First 40).Line"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Parse Build Log Node",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const fs=require('fs');const p='water-management-system/tmp-build.txt';const s=fs.readFileSync(p,'utf16le');const lines=s.split(/\\r?\\n/).filter(l=>/TS\\d+|error|failed|Cannot find|not assignable|does not exist/i.test(l));console.log(lines.slice(0,80).join('\\n')||'NO_MATCH');"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Parse Supabase Start Log Node",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const fs=require('fs');const p='water-management-system/tmp-supabase-start.txt';const s=fs.readFileSync(p,'utf16le');const lines=s.split(/\\r?\\n/).filter(l=>/failed|docker|cannot|error|connect|daemon|npipe/i.test(l));console.log(lines.slice(0,80).join('\\n')||'NO_MATCH');"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Print Log Summary",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"water-management-system/scripts/print-log-summary.mjs"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Print Log Summary 2",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"water-management-system/scripts/print-log-summary.mjs"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "TS NoEmit After Fix",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; .\\node_modules\\.bin\\tsc --noEmit"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build After Fix",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; npm run build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "TS NoEmit Final",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; .\\node_modules\\.bin\\tsc --noEmit"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Final",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Set-Location .\\water-management-system; npm run build"
+			],
+			"isBackground": false
 		}
 	]
 }

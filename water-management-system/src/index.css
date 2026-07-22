@@ -1,22 +1,68 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
 
-:root {
-  /* Palette — deep control-room ink with a cyan "flow" accent */
-  --ink: #0b1720;
-  --panel: #101f2b;
-  --panel-raised: #142b3a;
-  --line: #1e3846;
-  --flow: #2dd4bf;
+:root,
+html[data-theme='dark'] {
+  --flow: #06b6d4;
   --flow-deep: #0e7490;
-  --amber: #f5a524;
-  --danger: #f2545b;
-  --text: #e7f1f5;
-  --text-muted: #7e97a6;
+  --amber: #f59e0b;
+  --danger: #ef4444;
+
+  --bg-canvas: #071522;
+  --bg-sidebar-top: rgba(10, 25, 40, 0.96);
+  --bg-sidebar-bottom: rgba(7, 19, 32, 0.98);
+  --bg-topbar: rgba(10, 25, 40, 0.9);
+  --bg-panel: rgba(15, 31, 47, 0.82);
+  --bg-panel-solid: #0f1f2f;
+  --bg-control: rgba(17, 37, 56, 0.68);
+  --bg-hover: rgba(20, 48, 72, 0.68);
+
+  --line-soft: rgba(114, 158, 185, 0.26);
+  --line-strong: rgba(146, 195, 224, 0.36);
+
+  --text-primary: #e6f4fb;
+  --text-muted: #b9d0df;
+  --text-dim: #8da7b8;
 
   --font-display: "IBM Plex Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
+  /* Backward-compatible aliases used by existing components */
+  --panel: var(--bg-panel-solid);
+  --panel-raised: #183248;
+  --line: var(--line-soft);
+  --text: var(--text-primary);
   color-scheme: dark;
+}
+
+html[data-theme='light'] {
+  --flow: #0284c7;
+  --flow-deep: #0e7490;
+  --amber: #d97706;
+  --danger: #dc2626;
+
+  --bg-canvas: #eaf2f8;
+  --bg-sidebar-top: rgba(255, 255, 255, 0.95);
+  --bg-sidebar-bottom: rgba(246, 251, 255, 0.95);
+  --bg-topbar: rgba(255, 255, 255, 0.9);
+  --bg-panel: rgba(255, 255, 255, 0.86);
+  --bg-panel-solid: #ffffff;
+  --bg-control: rgba(244, 250, 255, 0.94);
+  --bg-hover: rgba(228, 241, 249, 0.95);
+
+  --line-soft: rgba(10, 53, 77, 0.16);
+  --line-strong: rgba(10, 53, 77, 0.28);
+
+  --text-primary: #102538;
+  --text-muted: #365167;
+  --text-dim: #587086;
+
+  /* Backward-compatible aliases used by existing components */
+  --panel: var(--bg-panel-solid);
+  --panel-raised: #eef6fb;
+  --line: var(--line-soft);
+  --text: var(--text-primary);
+
+  color-scheme: light;
 }
 
 * {
@@ -31,13 +77,19 @@ body,
 }
 
 body {
-  background: var(--ink);
+  background: var(--bg-canvas);
   background-image:
-    radial-gradient(circle at 15% 0%, rgba(45, 212, 191, 0.06), transparent 40%),
-    radial-gradient(circle at 85% 20%, rgba(14, 116, 144, 0.08), transparent 45%);
-  color: var(--text);
+    radial-gradient(circle at 15% 0%, rgba(6, 182, 212, 0.12), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(14, 116, 144, 0.1), transparent 45%);
+  color: var(--text-primary);
   font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 button {
@@ -57,6 +109,13 @@ a {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
+}
+
+.surface {
+  background: var(--bg-panel);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  box-shadow: 0 16px 30px rgba(2, 10, 20, 0.2);
 }
 
 .scrollbar-thin::-webkit-scrollbar {

@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { demoMeterReadings } from '../lib/demoData'
+import { isDemoRuntime, shouldUseRealtime } from '../lib/runtimeMode'
 
 export interface MeterReading {
   id: string
@@ -16,6 +18,11 @@ export interface MeterReading {
   }
 }
 
+function firstOrNull<T>(value: T | T[] | null | undefined): T | undefined {
+  if (Array.isArray(value)) return value[0]
+  return value ?? undefined
+}
+
 export function useMeterReadings(meterId?: string) {
   const [data, setData] = useState<MeterReading[]>([])
   const [loading, setLoading] = useState(true)
@@ -24,6 +31,14 @@ export function useMeterReadings(meterId?: string) {
   const load = useCallback(async () => {
     try {
       setLoading(true)
+
+      if (isDemoRuntime()) {
+        const filtered = meterId ? demoMeterReadings.filter((reading) => reading.meter_id === meterId) : demoMeterReadings
+        setData(filtered as MeterReading[])
+        setError(null)
+        return
+      }
+
       let query = supabase
         .from('meter_readings')
         .select(
@@ -51,7 +66,13 @@ export function useMeterReadings(meterId?: string) {
       const { data, error } = await query
 
       if (error) throw error
-      setData(data || [])
+
+      const normalized = (data || []).map((row: any) => ({
+        ...row,
+        meters: firstOrNull(row.meters),
+      })) as MeterReading[]
+
+      setData(normalized)
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load meter readings')
@@ -62,6 +83,10 @@ export function useMeterReadings(meterId?: string) {
 
   useEffect(() => {
     load()
+
+    if (!shouldUseRealtime()) {
+      return
+    }
 
     const channel = supabase
       .channel('meter_readings_updates')

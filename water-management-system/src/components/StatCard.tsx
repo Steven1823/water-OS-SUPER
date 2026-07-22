@@ -1,11 +1,12 @@
 interface StatCardProps {
   label: string;
-  value: string;
+  value: string | number;
+  icon?: string;
   unit?: string;
   accent?: "flow" | "amber" | "danger";
 }
 
-export function StatCard({ label, value, unit, accent = "flow" }: StatCardProps) {
+export function StatCard({ label, value, icon, unit, accent = "flow" }: StatCardProps) {
   const accentColor = `var(--${accent})`;
   return (
     <div
@@ -19,7 +20,7 @@ export function StatCard({ label, value, unit, accent = "flow" }: StatCardProps)
       }}
     >
       <div style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-        {label}
+        {icon ? `${icon} ${label}` : label}
       </div>
       <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 6 }}>
         <span className="meter" style={{ fontSize: 26, fontWeight: 600 }}>
