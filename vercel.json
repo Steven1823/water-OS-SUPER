@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd water-management-system && npm install",
+  "buildCommand": "cd water-management-system && npm run build",
+  "outputDirectory": "water-management-system/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

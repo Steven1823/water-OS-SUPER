@@ -1,4 +1,5 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { FormEvent } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { isDemoModeEnabled, setDemoModeEnabled } from '../lib/demoMode'

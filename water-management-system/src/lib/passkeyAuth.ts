@@ -116,6 +116,10 @@ export async function verifyDevicePasskey(email?: string): Promise<{ ok: true; e
 
     const challenge = crypto.getRandomValues(new Uint8Array(32))
     const allowCredentialId = fromBase64Url(record.credentialId)
+    const allowCredentialIdBuffer = allowCredentialId.buffer.slice(
+      allowCredentialId.byteOffset,
+      allowCredentialId.byteOffset + allowCredentialId.byteLength,
+    )
 
     const assertion = (await navigator.credentials.get({
       publicKey: {
@@ -123,7 +127,7 @@ export async function verifyDevicePasskey(email?: string): Promise<{ ok: true; e
         timeout: 60000,
         allowCredentials: [
           {
-            id: allowCredentialId,
+            id: allowCredentialIdBuffer,
             type: 'public-key',
           },
         ],
