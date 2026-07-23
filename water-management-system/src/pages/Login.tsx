@@ -62,7 +62,7 @@ export function LoginPage() {
       })
 
       if (signUpError) {
-              placeholder="WATER-MANAGEMENT-2026"
+        setError(signUpError.message)
         setLoading(false)
         return
       }
