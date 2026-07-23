@@ -1,13 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const configuredSupabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim() ?? "";
+const configuredSupabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim() ?? "";
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  // Fails loud in dev if .env is missing — better than a silent blank dashboard.
+export const hasSupabaseConfig = Boolean(configuredSupabaseUrl && configuredSupabaseAnonKey);
+
+// Keep app boot stable even when deployment env vars are missing.
+const fallbackSupabaseUrl = "https://placeholder.supabase.co";
+const fallbackSupabaseAnonKey = "placeholder-anon-key";
+
+if (!hasSupabaseConfig) {
   console.warn(
-    "Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY — copy .env.example to .env.local"
+    "Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. Configure them in your host (e.g. Vercel Project Settings -> Environment Variables)."
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(
+  hasSupabaseConfig ? configuredSupabaseUrl : fallbackSupabaseUrl,
+  hasSupabaseConfig ? configuredSupabaseAnonKey : fallbackSupabaseAnonKey
+);

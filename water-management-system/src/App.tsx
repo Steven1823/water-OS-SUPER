@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import type { Session } from '@supabase/supabase-js'
 import { Layout } from './components/Layout'
-import { supabase } from './lib/supabaseClient'
+import { hasSupabaseConfig, supabase } from './lib/supabaseClient'
 import { isDemoModeEnabled } from './lib/demoMode'
 import { DashboardPage } from './pages/Dashboard'
 import { CustomersPage } from './pages/Customers'
@@ -47,6 +47,12 @@ function App() {
 
   useEffect(() => {
     if (isDemoModeEnabled()) {
+      setSession(null)
+      setLoading(false)
+      return
+    }
+
+    if (!hasSupabaseConfig) {
       setSession(null)
       setLoading(false)
       return
