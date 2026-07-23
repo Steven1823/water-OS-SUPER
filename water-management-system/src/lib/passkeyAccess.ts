@@ -9,6 +9,10 @@ function normalizeEmail(email: string): string {
   return email.trim().toLowerCase()
 }
 
+function normalizeAccessKey(key: string): string {
+  return key.trim().toUpperCase()
+}
+
 function readAccessRecords(): StoredPasskeyAccess[] {
   try {
     const raw = window.localStorage.getItem(PASSKEY_ACCESS_STORAGE_KEY)
@@ -31,7 +35,7 @@ function configuredAccessKeys(): string[] {
     .map((item) => item.trim())
     .filter(Boolean)
 
-  const keys = [single, ...(many || [])].filter(Boolean) as string[]
+  const keys = [single, ...(many || [])].filter(Boolean).map((key) => normalizeAccessKey(key as string))
   return Array.from(new Set(keys))
 }
 
@@ -47,7 +51,7 @@ export function unlockPasskeyAccess(email: string, secretKey: string): { ok: tru
     return { ok: false, error: 'Enter your email first.' }
   }
 
-  const key = secretKey.trim()
+  const key = normalizeAccessKey(secretKey)
   if (!key) {
     return { ok: false, error: 'Enter the passkey access key you were issued.' }
   }

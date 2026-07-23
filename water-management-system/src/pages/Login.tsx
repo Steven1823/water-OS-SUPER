@@ -62,7 +62,7 @@ export function LoginPage() {
       })
 
       if (signUpError) {
-        setError(signUpError.message)
+              placeholder="WATER-MANAGEMENT-2026"
         setLoading(false)
         return
       }
@@ -456,7 +456,7 @@ export function LoginPage() {
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <input
               type="password"
-              placeholder="Enter issued access key"
+              placeholder="WATER-MANAGEMENT-2026"
               value={passkeySecret}
               onChange={(event) => setPasskeySecret(event.target.value)}
               style={{

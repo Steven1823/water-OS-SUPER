@@ -25,10 +25,11 @@ function fromBase64Url(value: string): Uint8Array {
   return out
 }
 
-function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+function toCredentialIdBuffer(bytes: Uint8Array): Uint8Array<ArrayBuffer> {
   const out = new ArrayBuffer(bytes.byteLength)
-  new Uint8Array(out).set(bytes)
-  return out
+  const view = new Uint8Array(out)
+  view.set(bytes)
+  return view
 }
 
 function readStoredPasskeys(): StoredPasskey[] {
@@ -122,7 +123,7 @@ export async function verifyDevicePasskey(email?: string): Promise<{ ok: true; e
 
     const challenge = crypto.getRandomValues(new Uint8Array(32))
     const allowCredentialId = fromBase64Url(record.credentialId)
-    const allowCredentialIdBuffer = toArrayBuffer(allowCredentialId)
+    const allowCredentialIdBuffer = toCredentialIdBuffer(allowCredentialId)
 
     const assertion = (await navigator.credentials.get({
       publicKey: {
